@@ -12,16 +12,16 @@ function openvpn-event-watcher
     set -l event
     string match -q -r '/openvpn-(?<event>\w+)[^/]+$' $file
     set -l event_argv (cat $file | string collect)
-    set -l var (string replace -a - _ openvpn-event-$event)
+    set -l var (string replace -a - _0 openvpn-event-$event)
     set -U $var $event_argv
   end
 end
 
 for event in $openvpn_events
-  set -l var (string replace -a - _ openvpn-event-$event)
+  set -l var (string replace -a - _0 openvpn-event-$event)
   function openvpn-event-emitter-$event -v $var
     set -l event (status function | string replace openvpn-event-emitter- '')
-    set -l var (string replace -a - _ openvpn-event-$event)
+    set -l var (string replace -a - _0 openvpn-event-$event)
     emit openvpn-$event $$var
   end
 end
@@ -29,7 +29,7 @@ end
 function openvpn-event-debugger -a action
   for event in $openvpn_events
     set -l funcname (status function)-$event
-    set -l var (string replace -a - _ openvpn-event-$event)
+    set -l var (string replace -a - _0 openvpn-event-$event)
     functions -e $funcname
     if test "$action" != 'stop'
       if set -q $var
